@@ -18,12 +18,12 @@ Describe "Snyk iac test command"
       # File Outputs Summary
       The output should include "Organization:"
       The output should include "Type:              Terraform"
-      The output should include "Target file:       /home/circleci/snyk/test/fixtures/iac/terraform/sg_open_ssh.tf"
+      The output should include "Target file:       sg_open_ssh.tf"
       The output should include "Project name:      terraform"
       The output should include "Open source:       no"
       The output should include "Project path:      ../fixtures/iac/terraform/"
 
-      The output should include "Tested sg_open_ssh.tf for known issues, found 1 issues"
+      The output should include "Tested sg_open_ssh.tf for known issues, found"
 
       # Invalid File testing - Go Template
       The output should include "Testing sg_open_ssh_invalid_go_templates.tf..."
@@ -48,12 +48,12 @@ Describe "Snyk iac test command"
       # File Outputs Summary
       The output should include "Organization:"
       The output should include "Type:              Terraform"
-      The output should include "Target file:       /home/circleci/snyk/test/fixtures/iac/terraform/sg_open_ssh.tf"
+      The output should include "Target file:       sg_open_ssh.tf"
       The output should include "Project name:      terraform"
       The output should include "Open source:       no"
       The output should include "Project path:      ../fixtures/iac/terraform"
 
-      The output should include "Tested sg_open_ssh.tf for known issues, found 0 issues"
+      The output should include "Tested sg_open_ssh.tf for known issues, found"
 
       # Invalid File testing - Go Template
       The output should include "Testing sg_open_ssh_invalid_go_templates.tf..."

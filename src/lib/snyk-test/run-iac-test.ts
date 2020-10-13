@@ -41,9 +41,10 @@ export async function parseIacTestResult(
   };
 }
 
-export interface IacPayloadFile {
+export interface IacPayloadFileDetails {
   fileType: string;
-  targetFile: string;
+  fileName: string;
+  filePath: string;
   targetFileRelativePath: string;
 }
 
@@ -51,7 +52,7 @@ export async function assembleIacLocalPayloads(
   root: string,
   options: Options & TestOptions,
 ): Promise<Payload[]> {
-  const filesToTest: IacPayloadFile[] = [];
+  const filesToTest: IacPayloadFileDetails[] = [];
 
   if (!options.iacDirFiles) {
     const fileType = pathLib.extname(root).substr(1);
@@ -59,50 +60,49 @@ export async function assembleIacLocalPayloads(
     const targetFileRelativePath = targetFile
       ? pathUtil.join(pathUtil.resolve(`${options.path}`), targetFile)
       : '';
-    filesToTest.push({ fileType, targetFile, targetFileRelativePath });
+    filesToTest.push({
+      fileType,
+      fileName: root,
+      filePath: targetFile,
+      targetFileRelativePath,
+    });
   } else {
     for (const iacFile of options.iacDirFiles) {
       if (iacFile.projectType) {
         const targetFile = iacFile.filePath;
         filesToTest.push({
           fileType: iacFile.fileType,
-          targetFile,
+          fileName: path.basename(targetFile),
+          filePath: targetFile,
           targetFileRelativePath: targetFile,
         });
       }
     }
   }
 
-  return filesToTest.map((iacFile) => {
-    return assembleIacLocalPayload(
-      iacFile.fileType,
-      iacFile.targetFile,
-      iacFile.targetFileRelativePath,
-      options,
-    );
+  return filesToTest.map((iacFileDetails) => {
+    return assembleIacLocalPayload(iacFileDetails, options);
   });
 }
 
 function assembleIacLocalPayload(
-  fileType: string,
-  targetFile: string,
-  targetFileRelativePath: string,
+  fileDetails: IacPayloadFileDetails,
   options: Options & TestOptions,
 ): Payload {
-  const fileContent = fs.readFileSync(targetFile, 'utf8');
-  const projectType = projectTypeByFileType[fileType];
+  const fileContent = fs.readFileSync(fileDetails.filePath, 'utf8');
+  const projectType = projectTypeByFileType[fileDetails.fileType];
 
   const body: IacScan = {
     data: {
       fileContent,
-      fileType: fileType as IacFileTypes,
+      fileType: fileDetails.fileType as IacFileTypes,
     },
-    targetFile,
+    targetFile: fileDetails.fileName,
     type: projectType,
     //TODO(orka): future - support policy
     policy: '',
-    targetFileRelativePath: `${targetFileRelativePath}`, // Forcing string
-    originalProjectName: path.basename(path.dirname(targetFile)),
+    targetFileRelativePath: `${fileDetails.targetFileRelativePath}`, // Forcing string
+    originalProjectName: path.basename(path.dirname(fileDetails.filePath)),
     projectNameOverride: options.projectName,
   };
   const payload: Payload = {

@@ -86,7 +86,10 @@ async function getProjectTypeForIacFile(filePath: string) {
 
 async function getDirectoryFiles(root: string) {
   const iacFiles: IacFileInDirectory[] = [];
-  const files = glob.sync(pathLib.join(root, '/**/**/*.+(json|yaml|yml|tf)'));
+  const dirPath = pathLib.resolve(root, '.');
+  const files = glob.sync(
+    pathLib.join(dirPath, '/**/**/*.+(json|yaml|yml|tf)'),
+  );
 
   for (const fileName of files) {
     const ext = pathLib.extname(fileName).substr(1);

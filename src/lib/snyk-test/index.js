@@ -44,11 +44,14 @@ async function executeTest(root, options) {
           res.packageManager = options.packageManager;
         }
 
-        // For IaC Directory support - make sure the result get the right project type 
+        // For IaC Directory support - make sure the result get the right project type
         // after finding this is a Directory case
-        if (options.iac && 
-          res.result?.projectType && 
-          options.packageManager === iacProjects.IacProjectType.MULTI_IAC) {
+        if (
+          options.iac &&
+          res.result &&
+          res.result.projectType &&
+          options.packageManager === iacProjects.IacProjectType.MULTI_IAC
+        ) {
           res.packageManager = res.result.projectType;
         }
       }
