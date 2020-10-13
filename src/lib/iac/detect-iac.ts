@@ -3,11 +3,7 @@ import * as pathLib from 'path';
 import * as debugLib from 'debug';
 import * as glob from 'glob';
 import { isLocalFolder, localFileSuppliedButNotFound } from '../detect';
-import {
-  IacErrorWithMessage,
-  IllegalIacFileErrorMsg,
-  CustomError,
-} from '../errors';
+import { CustomError } from '../errors';
 import { validateK8sFile, makeValidateTerraformRequest } from './iac-parser';
 import {
   projectTypeByFileType,
@@ -19,7 +15,11 @@ import {
   UnsupportedOptionFileIacError,
   IacDirectoryWithoutAnyIacFileError,
 } from '../errors/unsupported-options-iac-error';
-import { IllegalTerraformFileError } from '../errors/invalid-iac-file';
+import {
+  IllegalIacCustomError,
+  InvalidK8SFileError,
+  IllegalTerraformFileError,
+} from '../errors/invalid-iac-file';
 import { Options, TestOptions, IacFileInDirectory } from '../types';
 
 const debug = debugLib('snyk-detect-iac');
@@ -64,7 +64,7 @@ async function getProjectTypeForIacFile(filePath: string) {
         fileName,
       );
       if (!isValidFile) {
-        throw IacErrorWithMessage(reason); //TODO: InvalidK8s
+        throw InvalidK8SFileError(reason);
       }
       break;
     }
@@ -78,7 +78,7 @@ async function getProjectTypeForIacFile(filePath: string) {
       break;
     }
     default:
-      throw IacErrorWithMessage(IllegalIacFileErrorMsg([fileName]));
+      throw IllegalIacCustomError(fileName);
   }
 
   return projectType;

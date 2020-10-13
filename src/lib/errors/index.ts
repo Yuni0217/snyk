@@ -22,6 +22,5 @@ export { FeatureNotSupportedByPackageManagerError } from './feature-not-supporte
 export {
   NotSupportedIacFileErrorMsg,
   IllegalIacFileErrorMsg,
-  IacErrorWithMessage,
 } from './invalid-iac-file';
 export { TestLimitReachedError } from './test-limit-reached-error';

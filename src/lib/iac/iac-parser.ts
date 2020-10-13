@@ -55,7 +55,7 @@ export function validateK8sFile(
 ): IacValidationResponse {
   const k8sObjects: any[] = parseYamlOrJson(fileContent, filePath);
   if (!k8sObjects) {
-    return { isValidFile: false, reason: IllegalIacFileErrorMsg([fileName]) };
+    return { isValidFile: false, reason: IllegalIacFileErrorMsg(fileName) };
   }
 
   let numOfSupportedKeyDocs = 0;
@@ -72,7 +72,7 @@ export function validateK8sFile(
         debug(`Missing required field (${key})`);
         return {
           isValidFile: false,
-          reason: IllegalIacFileErrorMsg([fileName]),
+          reason: IllegalIacFileErrorMsg(fileName),
         };
       }
     }
@@ -81,7 +81,7 @@ export function validateK8sFile(
   if (numOfSupportedKeyDocs === 0) {
     return {
       isValidFile: false,
-      reason: NotSupportedIacFileErrorMsg([fileName]),
+      reason: NotSupportedIacFileErrorMsg(fileName),
     };
   }
 

@@ -74,7 +74,7 @@ function run(root, options) {
 
 function validateProjectType(options, projectType) {
   if (options.iac) {
-    if (!iacProjects.TEST_SUPPORTED_IAC_PROJECTS.includes(projectType) || isIacDirecotry()) {
+    if (!iacProjects.TEST_SUPPORTED_IAC_PROJECTS.includes(projectType)) {
       throw new NotSupportedIacFileError(projectType);
     }
   } else {
