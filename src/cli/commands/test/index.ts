@@ -293,15 +293,18 @@ async function test(...args: MethodArgs): Promise<TestCommandResult> {
   }
 
   let summaryMessage = '';
+  let errorResultsLength = errorResults.length;
 
-  const iacDirFilesErrors = options.iacDirFiles?.filter(
-    (iacFile) => iacFile.failureReason,
-  );
-  const errorResultsLength = iacDirFilesErrors?.length || errorResults.length;
+  if (options.iac && options.iacDirFiles) {
+    const iacDirFilesErrors = options.iacDirFiles?.filter(
+      (iacFile) => iacFile.failureReason,
+    );
+    errorResultsLength = iacDirFilesErrors?.length || errorResults.length;
 
-  if (iacDirFilesErrors) {
-    for (const iacFileError of iacDirFilesErrors) {
-      response += chalk.bold.red(getIacDisplayErrorFileOutput(iacFileError));
+    if (iacDirFilesErrors) {
+      for (const iacFileError of iacDirFilesErrors) {
+        response += chalk.bold.red(getIacDisplayErrorFileOutput(iacFileError));
+      }
     }
   }
 

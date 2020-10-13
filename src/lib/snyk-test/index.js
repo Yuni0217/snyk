@@ -35,7 +35,7 @@ async function executeTest(root, options) {
   try {
     if (!options.allProjects) {
       options.packageManager = options.iac
-        ? await detectIac.detectIacProject(root, options)
+        ? await detectIac.getProjectType(root, options)
         : detect.detectPackageManager(root, options);
     }
     return run(root, options).then((results) => {
@@ -44,7 +44,11 @@ async function executeTest(root, options) {
           res.packageManager = options.packageManager;
         }
 
-        if (options.iacDirFiles && res.result?.projectType) {
+        // For IaC Directory support - make sure the result get the right project type 
+        // after finding this is a Directory case
+        if (options.iac && 
+          res.result?.projectType && 
+          options.packageManager === iacProjects.IacProjectType.MULTI_IAC) {
           res.packageManager = res.result.projectType;
         }
       }
@@ -70,7 +74,7 @@ function run(root, options) {
 
 function validateProjectType(options, projectType) {
   if (options.iac) {
-    if (!iacProjects.TEST_SUPPORTED_IAC_PROJECTS.includes(projectType)) {
+    if (!iacProjects.TEST_SUPPORTED_IAC_PROJECTS.includes(projectType) || isIacDirecotry()) {
       throw new NotSupportedIacFileError(projectType);
     }
   } else {

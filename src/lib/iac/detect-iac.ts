@@ -24,7 +24,7 @@ import { Options, TestOptions, IacFileInDirectory } from '../types';
 
 const debug = debugLib('snyk-detect-iac');
 
-export async function detectIacProject(
+export async function getProjectType(
   root: string,
   options: Options & TestOptions,
 ): Promise<string> {
@@ -34,7 +34,13 @@ export async function detectIacProject(
   }
 
   if (isLocalFolder(root)) {
-    return await getFolderProjectType(root, options);
+    // Due to the fact we are first getting the project type and only then
+    // scanning the projects - we need save the files we need to scan on the options
+    // so we could create assembly payloads for the relevant files.
+    // We are sending it as a `Multi IaC` project - and later assign the relevant type for each project
+    const directoryFiles = await getDirectoryFiles(root);
+    options.iacDirFiles = directoryFiles;
+    return IacProjectType.MULTI_IAC;
   }
 
   if (localFileSuppliedButNotFound(root, '.') || !fs.existsSync(root)) {
@@ -58,7 +64,7 @@ async function getProjectTypeForIacFile(filePath: string) {
         fileName,
       );
       if (!isValidFile) {
-        throw IacErrorWithMessage(reason);
+        throw IacErrorWithMessage(reason); //TODO: InvalidK8s
       }
       break;
     }
@@ -78,10 +84,7 @@ async function getProjectTypeForIacFile(filePath: string) {
   return projectType;
 }
 
-async function getFolderProjectType(
-  root: string,
-  options: Options & TestOptions,
-) {
+async function getDirectoryFiles(root: string) {
   const iacFiles: IacFileInDirectory[] = [];
   const files = glob.sync(pathLib.join(root, '/**/**/*.+(json|yaml|yml|tf)'));
 
@@ -112,8 +115,5 @@ async function getFolderProjectType(
     throw IacDirectoryWithoutAnyIacFileError();
   }
 
-  options.iacDirFiles = iacFiles;
-
-  //We return here K8S be default as we want the test flow to continue as IaC projectType
-  return IacProjectType.K8S;
+  return iacFiles;
 }

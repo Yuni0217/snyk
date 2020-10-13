@@ -6,10 +6,10 @@ export function summariseVulnerableResults(
 ): string {
   const vulnsLength = vulnerableResults.length;
   if (vulnsLength) {
-    if (options.iac) {
-      return `, ${vulnsLength} contained issues.`;
-    } else if (options.showVulnPaths) {
-      return `, ${vulnsLength} contained vulnerable paths.`;
+    if (options.showVulnPaths) {
+      return `, ${vulnsLength} contained ${
+        options.iac ? 'issues' : 'vulnerable paths'
+      }.`;
     }
     return `, ${vulnsLength} had issues.`;
   }

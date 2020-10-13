@@ -7,6 +7,12 @@
       "name": "Tap Current File",
       "console": "integratedTerminal",
       "program": "${workspaceFolder}/node_modules/.bin/tap",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program - iac file",
+      "skipFiles": ["<node_internals>/**"],
       "args": [
         "${relativeFile}",
         "-Rspec",

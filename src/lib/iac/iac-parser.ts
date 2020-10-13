@@ -52,7 +52,7 @@ export function validateK8sFile(
   fileContent: string,
   filePath: string,
   fileName: string,
-) {
+): IacValidationResponse {
   const k8sObjects: any[] = parseYamlOrJson(fileContent, filePath);
   if (!k8sObjects) {
     return { isValidFile: false, reason: IllegalIacFileErrorMsg([fileName]) };

@@ -41,42 +41,46 @@ export async function parseIacTestResult(
   };
 }
 
+export interface IacPayloadFile {
+  fileType: string;
+  targetFile: string;
+  targetFileRelativePath: string;
+}
+
 export async function assembleIacLocalPayloads(
   root: string,
   options: Options & TestOptions,
 ): Promise<Payload[]> {
-  const payloads: Payload[] = [];
-  // Forcing options.path to be a string as pathUtil requires is to be stringified
+  const filesToTest: IacPayloadFile[] = [];
 
   if (!options.iacDirFiles) {
+    const fileType = pathLib.extname(root).substr(1);
     const targetFile = pathLib.resolve(root, '.');
     const targetFileRelativePath = targetFile
       ? pathUtil.join(pathUtil.resolve(`${options.path}`), targetFile)
       : '';
-    const fileType = pathLib.extname(root).substr(1);
-    const payload = assembleIacLocalPayload(
-      fileType,
-      targetFile,
-      targetFileRelativePath,
-      options,
-    );
-    return [payload];
-  }
-
-  for (const iacFile of options.iacDirFiles) {
-    if (iacFile.projectType) {
-      const targetFile = iacFile.filePath;
-      const payload = assembleIacLocalPayload(
-        iacFile.fileType,
-        targetFile,
-        targetFile,
-        options,
-      );
-      payloads.push(payload);
+    filesToTest.push({ fileType, targetFile, targetFileRelativePath });
+  } else {
+    for (const iacFile of options.iacDirFiles) {
+      if (iacFile.projectType) {
+        const targetFile = iacFile.filePath;
+        filesToTest.push({
+          fileType: iacFile.fileType,
+          targetFile,
+          targetFileRelativePath: targetFile,
+        });
+      }
     }
   }
 
-  return payloads;
+  return filesToTest.map((iacFile) => {
+    return assembleIacLocalPayload(
+      iacFile.fileType,
+      iacFile.targetFile,
+      iacFile.targetFileRelativePath,
+      options,
+    );
+  });
 }
 
 function assembleIacLocalPayload(
